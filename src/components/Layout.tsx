@@ -26,16 +26,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="lg:pl-72">
+      <div className="flex-1 flex flex-col lg:ml-72">
         <Header 
           title={getPageTitle()}
           onMenuClick={() => setSidebarOpen(true)}
         />
         
-        <main className="p-6">
+        <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
