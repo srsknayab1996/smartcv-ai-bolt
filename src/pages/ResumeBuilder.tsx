@@ -15,7 +15,6 @@ const getStepsForUserType = (userType?: string) => {
   const baseSteps = [
     { id: 'userType', title: 'Career Stage', component: UserTypeSelection },
     { id: 'personal', title: 'Personal Info', component: PersonalInfoForm },
-    { id: 'summary', title: 'Summary', component: SummaryForm },
   ];
 
   if (userType === 'fresher') {
@@ -25,6 +24,7 @@ const getStepsForUserType = (userType?: string) => {
       { id: 'projects', title: 'Projects', component: ProjectsForm },
       { id: 'internships', title: 'Internships', component: InternshipsForm },
       { id: 'skills', title: 'Skills', component: SkillsForm },
+      { id: 'summary', title: 'Summary', component: SummaryForm }, // Moved to last
     ];
   } else if (userType === 'experienced' || userType === 'senior') {
     return [
@@ -33,6 +33,7 @@ const getStepsForUserType = (userType?: string) => {
       { id: 'skills', title: 'Skills', component: SkillsForm },
       { id: 'education', title: 'Education', component: EducationForm },
       { id: 'projects', title: 'Projects', component: ProjectsForm },
+      { id: 'summary', title: 'Summary', component: SummaryForm }, // Moved to last
     ];
   } else if (userType === 'career-change') {
     return [
@@ -41,6 +42,7 @@ const getStepsForUserType = (userType?: string) => {
       { id: 'experience', title: 'Experience', component: ExperienceForm },
       { id: 'projects', title: 'Projects', component: ProjectsForm },
       { id: 'education', title: 'Education', component: EducationForm },
+      { id: 'summary', title: 'Summary', component: SummaryForm }, // Moved to last
     ];
   }
 
@@ -48,10 +50,10 @@ const getStepsForUserType = (userType?: string) => {
   return [
     { id: 'userType', title: 'Career Stage', component: UserTypeSelection },
     { id: 'personal', title: 'Personal Info', component: PersonalInfoForm },
-    { id: 'summary', title: 'Summary', component: SummaryForm },
     { id: 'experience', title: 'Experience', component: ExperienceForm },
     { id: 'education', title: 'Education', component: EducationForm },
     { id: 'skills', title: 'Skills', component: SkillsForm },
+    { id: 'summary', title: 'Summary', component: SummaryForm }, // Moved to last
   ];
 };
 
@@ -93,6 +95,9 @@ export const ResumeBuilder: React.FC = () => {
     }
     return true;
   };
+
+  const isLastStep = currentStep === steps.length - 1;
+  const isSummaryStep = steps[currentStep]?.id === 'summary';
 
   if (!currentResume) {
     return <div>Loading...</div>;
@@ -164,13 +169,24 @@ export const ResumeBuilder: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-900">
                 {steps[currentStep]?.title}
               </h2>
-              {currentStep > 0 && (
+              {isSummaryStep && (
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-700">AI Ready</span>
+                </div>
+              )}
+              {currentStep > 0 && !isSummaryStep && (
                 <button className="flex items-center space-x-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors">
                   <Sparkles className="w-4 h-4" />
                   <span>AI Assist</span>
                 </button>
               )}
             </div>
+            {isSummaryStep && (
+              <p className="text-sm text-gray-600 mt-2">
+                Now that we have all your details, let's create a compelling professional summary!
+              </p>
+            )}
           </div>
           
           <div className="p-6">
@@ -202,18 +218,28 @@ export const ResumeBuilder: React.FC = () => {
                   <span>Save</span>
                 </button>
 
-                <button
-                  onClick={handleNext}
-                  disabled={currentStep === steps.length - 1 || !canProceed()}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    currentStep === steps.length - 1 || !canProceed()
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  <span>Next</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {isLastStep ? (
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Complete & Download</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleNext}
+                    disabled={!canProceed()}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      !canProceed()
+                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    <span>Next</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
