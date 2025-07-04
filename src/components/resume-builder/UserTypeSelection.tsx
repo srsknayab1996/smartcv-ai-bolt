@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, Briefcase, Users, TrendingUp, CheckCircle } from 'lucide-react';
+import { GraduationCap, Briefcase, Users, TrendingUp } from 'lucide-react';
 import { useResume } from '../../contexts/ResumeContext';
 
 export const UserTypeSelection: React.FC = () => {
@@ -8,16 +8,10 @@ export const UserTypeSelection: React.FC = () => {
   const userTypes = [
     {
       id: 'fresher',
-      title: 'Fresh Graduate',
-      subtitle: 'Entry Level',
+      title: 'Fresh Graduate / Entry Level',
       description: 'New to the job market or recent graduate',
       icon: GraduationCap,
-      gradient: 'from-emerald-400 via-emerald-500 to-emerald-600',
-      bgGradient: 'from-emerald-50 to-emerald-100',
-      borderColor: 'border-emerald-200',
-      hoverBorderColor: 'hover:border-emerald-300',
-      selectedBorderColor: 'border-emerald-500',
-      selectedBgColor: 'bg-emerald-50',
+      color: 'emerald',
       features: [
         'Education-focused templates',
         'Project and internship highlights',
@@ -27,16 +21,10 @@ export const UserTypeSelection: React.FC = () => {
     },
     {
       id: 'experienced',
-      title: 'Experienced',
-      subtitle: 'Professional',
+      title: 'Experienced Professional',
       description: '2+ years of work experience',
       icon: Briefcase,
-      gradient: 'from-blue-400 via-blue-500 to-blue-600',
-      bgGradient: 'from-blue-50 to-blue-100',
-      borderColor: 'border-blue-200',
-      hoverBorderColor: 'hover:border-blue-300',
-      selectedBorderColor: 'border-blue-500',
-      selectedBgColor: 'bg-blue-50',
+      color: 'blue',
       features: [
         'Experience-focused templates',
         'Achievement-driven content',
@@ -47,15 +35,9 @@ export const UserTypeSelection: React.FC = () => {
     {
       id: 'career-change',
       title: 'Career Changer',
-      subtitle: 'Transitioning',
-      description: 'Switching to a new field or industry',
+      description: 'Transitioning to a new field or industry',
       icon: TrendingUp,
-      gradient: 'from-purple-400 via-purple-500 to-purple-600',
-      bgGradient: 'from-purple-50 to-purple-100',
-      borderColor: 'border-purple-200',
-      hoverBorderColor: 'hover:border-purple-300',
-      selectedBorderColor: 'border-purple-500',
-      selectedBgColor: 'bg-purple-50',
+      color: 'purple',
       features: [
         'Transferable skills focus',
         'Relevant experience highlighting',
@@ -66,15 +48,9 @@ export const UserTypeSelection: React.FC = () => {
     {
       id: 'senior',
       title: 'Senior Executive',
-      subtitle: 'Leadership',
       description: '10+ years with leadership experience',
       icon: Users,
-      gradient: 'from-orange-400 via-orange-500 to-orange-600',
-      bgGradient: 'from-orange-50 to-orange-100',
-      borderColor: 'border-orange-200',
-      hoverBorderColor: 'hover:border-orange-300',
-      selectedBorderColor: 'border-orange-500',
-      selectedBgColor: 'bg-orange-50',
+      color: 'orange',
       features: [
         'Executive-level templates',
         'Strategic impact focus',
@@ -83,6 +59,32 @@ export const UserTypeSelection: React.FC = () => {
       ]
     }
   ];
+
+  const getColorClasses = (color: string, isSelected: boolean) => {
+    const colors = {
+      emerald: {
+        icon: 'bg-emerald-500',
+        border: isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-300',
+        check: 'bg-emerald-500'
+      },
+      blue: {
+        icon: 'bg-blue-500',
+        border: isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300',
+        check: 'bg-blue-500'
+      },
+      purple: {
+        icon: 'bg-purple-500',
+        border: isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300',
+        check: 'bg-purple-500'
+      },
+      orange: {
+        icon: 'bg-orange-500',
+        border: isSelected ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-300',
+        check: 'bg-orange-500'
+      }
+    };
+    return colors[color as keyof typeof colors];
+  };
 
   const handleUserTypeSelect = (userType: string) => {
     if (currentResume) {
@@ -97,10 +99,10 @@ export const UserTypeSelection: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
           What best describes your career stage?
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-600 max-w-2xl mx-auto">
           This helps us customize your resume template and provide relevant guidance throughout the process.
         </p>
       </div>
@@ -109,133 +111,96 @@ export const UserTypeSelection: React.FC = () => {
         {userTypes.map((type) => {
           const Icon = type.icon;
           const isSelected = currentResume?.userType === type.id;
+          const colorClasses = getColorClasses(type.color, isSelected);
           
           return (
             <div
               key={type.id}
               onClick={() => handleUserTypeSelect(type.id)}
-              className={`group relative cursor-pointer rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl ${
-                isSelected 
-                  ? `${type.selectedBorderColor} ${type.selectedBgColor} shadow-lg scale-[1.02]` 
-                  : `${type.borderColor} bg-white ${type.hoverBorderColor} hover:shadow-lg`
-              }`}
+              className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-200 hover:shadow-md ${colorClasses.border}`}
             >
-              {/* Background Pattern */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${type.bgGradient} opacity-0 group-hover:opacity-30 ${isSelected ? 'opacity-20' : ''} rounded-2xl transition-opacity duration-300`} />
-              
-              {/* Selection Indicator */}
+              {/* Selection indicator */}
               {isSelected && (
-                <div className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-gray-100">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center">
+                  <div className={`w-4 h-4 ${colorClasses.check} rounded-full flex items-center justify-center`}>
+                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 </div>
               )}
 
-              <div className="relative p-8">
-                <div className="flex items-start space-x-6">
-                  {/* Icon */}
-                  <div className={`w-16 h-16 bg-gradient-to-br ${type.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-8 h-8 text-white" />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-gray-800 transition-colors">
-                        {type.title}
-                      </h3>
-                      <div className="flex items-center space-x-2 mb-3">
-                        <span className={`px-3 py-1 bg-gradient-to-r ${type.gradient} text-white text-sm font-medium rounded-full`}>
-                          {type.subtitle}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 leading-relaxed">
-                        {type.description}
-                      </p>
-                    </div>
-                    
-                    {/* Features */}
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
-                        <span className="w-2 h-2 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full mr-2" />
-                        What you'll get:
-                      </h4>
-                      <div className="grid grid-cols-1 gap-2">
-                        {type.features.map((feature, index) => (
-                          <div key={index} className="flex items-center text-sm text-gray-600 group-hover:text-gray-700 transition-colors">
-                            <div className={`w-1.5 h-1.5 bg-gradient-to-r ${type.gradient} rounded-full mr-3 flex-shrink-0`} />
-                            <span>{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+              <div className="flex items-start space-x-4">
+                <div className={`w-12 h-12 ${colorClasses.icon} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <Icon className="w-6 h-6 text-white" />
                 </div>
                 
-                {/* Hover Effect Border */}
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${type.gradient} opacity-0 group-hover:opacity-10 ${isSelected ? 'opacity-5' : ''} transition-opacity duration-300 pointer-events-none`} />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {type.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {type.description}
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-gray-900">What you'll get:</h4>
+                    <ul className="space-y-1">
+                      {type.features.map((feature, index) => (
+                        <li key={index} className="flex items-center text-xs text-gray-600">
+                          <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Selected Type Info */}
       {currentResume?.userType && (
-        <div className="bg-gradient-to-r from-indigo-50 via-blue-50 to-purple-50 border border-indigo-200 rounded-2xl p-8 shadow-sm">
-          <div className="flex items-start space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-              <span className="text-white text-lg font-bold">✨</span>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+          <div className="flex items-start space-x-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-blue-600 text-sm font-bold">💡</span>
             </div>
-            <div className="flex-1">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
+            <div>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">
                 Personalized Tips for {userTypes.find(t => t.id === currentResume.userType)?.title}
               </h4>
               {currentResume.userType === 'fresher' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-emerald-500 mr-2">•</span> Focus on your education, projects, and internships</p>
-                    <p className="flex items-center"><span className="text-emerald-500 mr-2">•</span> Highlight relevant coursework and academic achievements</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-emerald-500 mr-2">•</span> Emphasize technical skills and certifications</p>
-                    <p className="flex items-center"><span className="text-emerald-500 mr-2">•</span> Include volunteer work and extracurricular activities</p>
-                  </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Focus on your education, projects, and internships</p>
+                  <p>• Highlight relevant coursework and academic achievements</p>
+                  <p>• Emphasize technical skills and certifications</p>
+                  <p>• Include volunteer work and extracurricular activities</p>
                 </div>
               )}
               {currentResume.userType === 'experienced' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-blue-500 mr-2">•</span> Lead with your professional experience and achievements</p>
-                    <p className="flex items-center"><span className="text-blue-500 mr-2">•</span> Quantify your impact with specific metrics and numbers</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-blue-500 mr-2">•</span> Show career progression and increasing responsibilities</p>
-                    <p className="flex items-center"><span className="text-blue-500 mr-2">•</span> Keep education section brief unless highly relevant</p>
-                  </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Lead with your professional experience and achievements</p>
+                  <p>• Quantify your impact with specific metrics and numbers</p>
+                  <p>• Show career progression and increasing responsibilities</p>
+                  <p>• Keep education section brief unless highly relevant</p>
                 </div>
               )}
               {currentResume.userType === 'career-change' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-purple-500 mr-2">•</span> Highlight transferable skills relevant to your target role</p>
-                    <p className="flex items-center"><span className="text-purple-500 mr-2">•</span> Use a functional or hybrid resume format</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-purple-500 mr-2">•</span> Include relevant training, certifications, or courses</p>
-                    <p className="flex items-center"><span className="text-purple-500 mr-2">•</span> Write a compelling summary explaining your transition</p>
-                  </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Highlight transferable skills relevant to your target role</p>
+                  <p>• Use a functional or hybrid resume format</p>
+                  <p>• Include relevant training, certifications, or courses</p>
+                  <p>• Write a compelling summary explaining your transition</p>
                 </div>
               )}
               {currentResume.userType === 'senior' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-orange-500 mr-2">•</span> Focus on strategic impact and leadership achievements</p>
-                    <p className="flex items-center"><span className="text-orange-500 mr-2">•</span> Highlight team management and organizational influence</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="flex items-center"><span className="text-orange-500 mr-2">•</span> Include board positions, speaking engagements, or publications</p>
-                    <p className="flex items-center"><span className="text-orange-500 mr-2">•</span> Keep technical details high-level and results-focused</p>
-                  </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Focus on strategic impact and leadership achievements</p>
+                  <p>• Highlight team management and organizational influence</p>
+                  <p>• Include board positions, speaking engagements, or publications</p>
+                  <p>• Keep technical details high-level and results-focused</p>
                 </div>
               )}
             </div>
