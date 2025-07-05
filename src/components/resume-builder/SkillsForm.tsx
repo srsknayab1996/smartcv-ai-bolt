@@ -58,6 +58,26 @@ export const SkillsForm: React.FC = () => {
     setValue(`skills.${categoryIndex}.items`, updatedItems, { shouldDirty: true });
   };
 
+  // Handle category change - ask user if they want to keep skills or clear them
+  const handleCategoryChange = (categoryIndex: number, newCategory: string) => {
+    const currentSkills = getValues('skills');
+    const currentItems = currentSkills[categoryIndex]?.items || [];
+    
+    // Update the category
+    setValue(`skills.${categoryIndex}.category`, newCategory, { shouldDirty: true });
+    
+    // If there are existing skills and the category changed significantly, ask user
+    if (currentItems.length > 0) {
+      const shouldKeepSkills = window.confirm(
+        `You have ${currentItems.length} skill(s) in this category. Do you want to keep them with the new category "${newCategory}"?\n\nClick OK to keep skills, Cancel to clear them.`
+      );
+      
+      if (!shouldKeepSkills) {
+        setValue(`skills.${categoryIndex}.items`, [], { shouldDirty: true });
+      }
+    }
+  };
+
   const popularSkills = {
     'Technical Skills': [
       'JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java', 'SQL', 'Git',
@@ -96,7 +116,8 @@ export const SkillsForm: React.FC = () => {
                 Skill Category
               </label>
               <select
-                {...register(`skills.${categoryIndex}.category`)}
+                value={watchedSkills[categoryIndex]?.category || ''}
+                onChange={(e) => handleCategoryChange(categoryIndex, e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               >
                 <option value="">Select Category</option>
