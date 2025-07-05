@@ -62,20 +62,21 @@ export const SkillsForm: React.FC = () => {
   const handleCategoryChange = (categoryIndex: number, newCategory: string) => {
     const currentSkills = getValues('skills');
     const currentItems = currentSkills[categoryIndex]?.items || [];
+    const oldCategory = currentSkills[categoryIndex]?.category || '';
     
-    // Update the category
-    setValue(`skills.${categoryIndex}.category`, newCategory, { shouldDirty: true });
-    
-    // If there are existing skills and the category changed significantly, ask user
-    if (currentItems.length > 0) {
+    // If there are existing skills and the category changed, ask user
+    if (currentItems.length > 0 && oldCategory !== newCategory) {
       const shouldKeepSkills = window.confirm(
-        `You have ${currentItems.length} skill(s) in this category. Do you want to keep them with the new category "${newCategory}"?\n\nClick OK to keep skills, Cancel to clear them.`
+        `You have ${currentItems.length} skill(s) in "${oldCategory}". Do you want to keep them with the new category "${newCategory}"?\n\nClick OK to keep skills, Cancel to clear them.`
       );
       
       if (!shouldKeepSkills) {
         setValue(`skills.${categoryIndex}.items`, [], { shouldDirty: true });
       }
     }
+    
+    // Update the category
+    setValue(`skills.${categoryIndex}.category`, newCategory, { shouldDirty: true });
   };
 
   const popularSkills = {

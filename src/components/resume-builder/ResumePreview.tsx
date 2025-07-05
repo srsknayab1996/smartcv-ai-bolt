@@ -20,6 +20,11 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
   const isExperiencedUser = resume.userType === 'experienced' || resume.userType === 'senior';
   const isFresher = resume.userType === 'fresher';
 
+  // Filter out empty skill categories
+  const validSkillCategories = resume.skills?.filter(skillGroup => 
+    skillGroup.category && skillGroup.items && skillGroup.items.length > 0
+  ) || [];
+
   return (
     <div className="bg-white p-8 max-h-[800px] overflow-y-auto" id="resume-preview">
       {/* Header */}
@@ -216,24 +221,22 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
         </div>
       )}
 
-      {/* Skills */}
-      {resume.skills?.length > 0 && (
+      {/* Skills - Now properly organized by category */}
+      {validSkillCategories.length > 0 && (
         <div className="mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-3 uppercase tracking-wide">
             Skills
           </h2>
           <div className="space-y-2">
-            {resume.skills.map((skillGroup) => (
-              skillGroup.category && skillGroup.items?.length > 0 && (
-                <div key={skillGroup.id}>
-                  <span className="font-semibold text-gray-900">
-                    {skillGroup.category}:
-                  </span>
-                  <span className="ml-2 text-gray-700">
-                    {skillGroup.items.join(', ')}
-                  </span>
-                </div>
-              )
+            {validSkillCategories.map((skillGroup) => (
+              <div key={skillGroup.id}>
+                <span className="font-semibold text-gray-900">
+                  {skillGroup.category}:
+                </span>
+                <span className="ml-2 text-gray-700">
+                  {skillGroup.items.join(', ')}
+                </span>
+              </div>
             ))}
           </div>
         </div>
