@@ -42,25 +42,33 @@ export const SkillsForm: React.FC = () => {
 
   const addSkillToCategory = (categoryIndex: number, skill: string) => {
     if (skill.trim()) {
-      const currentSkills = getValues('skills');
+      const currentSkills = [...watchedSkills];
       const currentItems = currentSkills[categoryIndex]?.items || [];
-      const updatedItems = [...currentItems, skill.trim()];
+      currentSkills[categoryIndex] = {
+        ...currentSkills[categoryIndex],
+        items: [...currentItems, skill.trim()]
+      };
       
-      setValue(`skills.${categoryIndex}.items`, updatedItems, { shouldDirty: true });
+      // Update form and trigger re-render
+      setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
     }
   };
 
   const removeSkillFromCategory = (categoryIndex: number, skillIndex: number) => {
-    const currentSkills = getValues('skills');
+    const currentSkills = [...watchedSkills];
     const currentItems = currentSkills[categoryIndex]?.items || [];
-    const updatedItems = currentItems.filter((_, i) => i !== skillIndex);
+    currentSkills[categoryIndex] = {
+      ...currentSkills[categoryIndex],
+      items: currentItems.filter((_, i) => i !== skillIndex)
+    };
     
-    setValue(`skills.${categoryIndex}.items`, updatedItems, { shouldDirty: true });
+    // Update form and trigger re-render
+    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
   };
 
   // Handle category change - ask user if they want to keep skills or clear them
   const handleCategoryChange = (categoryIndex: number, newCategory: string) => {
-    const currentSkills = getValues('skills');
+    const currentSkills = [...watchedSkills];
     const currentItems = currentSkills[categoryIndex]?.items || [];
     const oldCategory = currentSkills[categoryIndex]?.category || '';
     
@@ -71,12 +79,26 @@ export const SkillsForm: React.FC = () => {
       );
       
       if (!shouldKeepSkills) {
-        setValue(`skills.${categoryIndex}.items`, [], { shouldDirty: true });
+        currentSkills[categoryIndex] = {
+          ...currentSkills[categoryIndex],
+          category: newCategory,
+          items: []
+        };
+      } else {
+        currentSkills[categoryIndex] = {
+          ...currentSkills[categoryIndex],
+          category: newCategory
+        };
       }
+    } else {
+      currentSkills[categoryIndex] = {
+        ...currentSkills[categoryIndex],
+        category: newCategory
+      };
     }
     
-    // Update the category
-    setValue(`skills.${categoryIndex}.category`, newCategory, { shouldDirty: true });
+    // Update form and trigger re-render
+    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
   };
 
   const popularSkills = {
@@ -117,7 +139,7 @@ export const SkillsForm: React.FC = () => {
                 Skill Category
               </label>
               <select
-                value={watchedSkills[categoryIndex]?.category || ''}
+                {...register(`skills.${categoryIndex}.category`)}
                 onChange={(e) => handleCategoryChange(categoryIndex, e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               >
