@@ -6,7 +6,7 @@ import { useResume } from '../../contexts/ResumeContext';
 export const SkillsForm: React.FC = () => {
   const { currentResume, setCurrentResume } = useResume();
   
-  const { control, register, watch } = useForm({
+  const { control, register, watch, setValue, getValues } = useForm({
     defaultValues: {
       skills: currentResume?.skills?.length ? currentResume.skills : [{
         id: Date.now().toString(),
@@ -42,19 +42,20 @@ export const SkillsForm: React.FC = () => {
 
   const addSkillToCategory = (categoryIndex: number, skill: string) => {
     if (skill.trim()) {
-      const currentItems = watchedSkills[categoryIndex]?.items || [];
+      const currentSkills = getValues('skills');
+      const currentItems = currentSkills[categoryIndex]?.items || [];
       const updatedItems = [...currentItems, skill.trim()];
-      // Update the form value
-      const newSkills = [...watchedSkills];
-      newSkills[categoryIndex] = { ...newSkills[categoryIndex], items: updatedItems };
+      
+      setValue(`skills.${categoryIndex}.items`, updatedItems, { shouldDirty: true });
     }
   };
 
   const removeSkillFromCategory = (categoryIndex: number, skillIndex: number) => {
-    const currentItems = watchedSkills[categoryIndex]?.items || [];
+    const currentSkills = getValues('skills');
+    const currentItems = currentSkills[categoryIndex]?.items || [];
     const updatedItems = currentItems.filter((_, i) => i !== skillIndex);
-    const newSkills = [...watchedSkills];
-    newSkills[categoryIndex] = { ...newSkills[categoryIndex], items: updatedItems };
+    
+    setValue(`skills.${categoryIndex}.items`, updatedItems, { shouldDirty: true });
   };
 
   const popularSkills = {
@@ -62,13 +63,26 @@ export const SkillsForm: React.FC = () => {
       'JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java', 'SQL', 'Git',
       'AWS', 'Docker', 'Kubernetes', 'MongoDB', 'PostgreSQL', 'GraphQL'
     ],
+    'Programming Languages': [
+      'JavaScript', 'Python', 'Java', 'TypeScript', 'C++', 'C#', 'PHP', 'Ruby',
+      'Go', 'Rust', 'Swift', 'Kotlin', 'Scala', 'R'
+    ],
+    'Frameworks & Libraries': [
+      'React', 'Angular', 'Vue.js', 'Node.js', 'Express.js', 'Django', 'Flask',
+      'Spring Boot', 'Laravel', 'Ruby on Rails', 'Next.js', 'Nuxt.js'
+    ],
+    'Tools & Technologies': [
+      'Git', 'Docker', 'Kubernetes', 'Jenkins', 'AWS', 'Azure', 'GCP',
+      'Terraform', 'Ansible', 'Webpack', 'Babel', 'ESLint'
+    ],
     'Soft Skills': [
       'Leadership', 'Communication', 'Problem Solving', 'Team Collaboration',
-      'Project Management', 'Critical Thinking', 'Adaptability', 'Time Management'
+      'Project Management', 'Critical Thinking', 'Adaptability', 'Time Management',
+      'Mentoring', 'Public Speaking', 'Negotiation', 'Conflict Resolution'
     ],
-    'Design Skills': [
-      'Figma', 'Adobe Creative Suite', 'Sketch', 'InVision', 'UI/UX Design',
-      'Wireframing', 'Prototyping', 'User Research', 'Design Systems'
+    'Languages': [
+      'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese',
+      'Portuguese', 'Italian', 'Russian', 'Arabic', 'Hindi', 'Korean'
     ]
   };
 
@@ -113,7 +127,7 @@ export const SkillsForm: React.FC = () => {
             </label>
             
             {/* Current skills */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-3 min-h-[2rem]">
               {(watchedSkills[categoryIndex]?.items || []).map((skill, skillIndex) => (
                 <span
                   key={skillIndex}
@@ -123,12 +137,15 @@ export const SkillsForm: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => removeSkillFromCategory(categoryIndex, skillIndex)}
-                    className="ml-2 text-blue-600 hover:text-blue-800"
+                    className="ml-2 text-blue-600 hover:text-blue-800 text-lg leading-none"
                   >
                     ×
                   </button>
                 </span>
               ))}
+              {(!watchedSkills[categoryIndex]?.items || watchedSkills[categoryIndex]?.items.length === 0) && (
+                <span className="text-gray-400 text-sm italic">No skills added yet</span>
+              )}
             </div>
 
             {/* Add skill input */}
@@ -141,18 +158,22 @@ export const SkillsForm: React.FC = () => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     const input = e.target as HTMLInputElement;
-                    addSkillToCategory(categoryIndex, input.value);
-                    input.value = '';
+                    if (input.value.trim()) {
+                      addSkillToCategory(categoryIndex, input.value);
+                      input.value = '';
+                    }
                   }
                 }}
               />
               <button
                 type="button"
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 onClick={(e) => {
                   const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                  addSkillToCategory(categoryIndex, input.value);
-                  input.value = '';
+                  if (input.value.trim()) {
+                    addSkillToCategory(categoryIndex, input.value);
+                    input.value = '';
+                  }
                 }}
               >
                 Add
@@ -162,7 +183,7 @@ export const SkillsForm: React.FC = () => {
             {/* Popular skills suggestions */}
             {watchedSkills[categoryIndex]?.category && popularSkills[watchedSkills[categoryIndex].category as keyof typeof popularSkills] && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Popular skills:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Popular skills for this category:</p>
                 <div className="flex flex-wrap gap-2">
                   {popularSkills[watchedSkills[categoryIndex].category as keyof typeof popularSkills]
                     .filter(skill => !(watchedSkills[categoryIndex]?.items || []).includes(skill))
@@ -172,7 +193,7 @@ export const SkillsForm: React.FC = () => {
                         key={skill}
                         type="button"
                         onClick={() => addSkillToCategory(categoryIndex, skill)}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                        className="px-3 py-1 text-sm border border-gray-300 rounded-full hover:bg-blue-50 hover:border-blue-300 transition-colors"
                       >
                         + {skill}
                       </button>
