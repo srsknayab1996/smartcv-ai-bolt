@@ -6,7 +6,7 @@ import { useResume } from '../../contexts/ResumeContext';
 export const SkillsForm: React.FC = () => {
   const { currentResume, setCurrentResume } = useResume();
   
-  const { control, register, watch, setValue, getValues } = useForm({
+  const { control, register, watch, setValue } = useForm({
     defaultValues: {
       skills: currentResume?.skills?.length ? currentResume.skills : [{
         id: Date.now().toString(),
@@ -44,13 +44,17 @@ export const SkillsForm: React.FC = () => {
     if (skill.trim()) {
       const currentSkills = [...watchedSkills];
       const currentItems = currentSkills[categoryIndex]?.items || [];
-      currentSkills[categoryIndex] = {
-        ...currentSkills[categoryIndex],
-        items: [...currentItems, skill.trim()]
-      };
       
-      // Update form and trigger re-render
-      setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
+      // Check if skill already exists
+      if (!currentItems.includes(skill.trim())) {
+        currentSkills[categoryIndex] = {
+          ...currentSkills[categoryIndex],
+          items: [...currentItems, skill.trim()]
+        };
+        
+        // Force update the form state
+        setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+      }
     }
   };
 
@@ -62,43 +66,8 @@ export const SkillsForm: React.FC = () => {
       items: currentItems.filter((_, i) => i !== skillIndex)
     };
     
-    // Update form and trigger re-render
-    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
-  };
-
-  // Handle category change - ask user if they want to keep skills or clear them
-  const handleCategoryChange = (categoryIndex: number, newCategory: string) => {
-    const currentSkills = [...watchedSkills];
-    const currentItems = currentSkills[categoryIndex]?.items || [];
-    const oldCategory = currentSkills[categoryIndex]?.category || '';
-    
-    // If there are existing skills and the category changed, ask user
-    if (currentItems.length > 0 && oldCategory !== newCategory) {
-      const shouldKeepSkills = window.confirm(
-        `You have ${currentItems.length} skill(s) in "${oldCategory}". Do you want to keep them with the new category "${newCategory}"?\n\nClick OK to keep skills, Cancel to clear them.`
-      );
-      
-      if (!shouldKeepSkills) {
-        currentSkills[categoryIndex] = {
-          ...currentSkills[categoryIndex],
-          category: newCategory,
-          items: []
-        };
-      } else {
-        currentSkills[categoryIndex] = {
-          ...currentSkills[categoryIndex],
-          category: newCategory
-        };
-      }
-    } else {
-      currentSkills[categoryIndex] = {
-        ...currentSkills[categoryIndex],
-        category: newCategory
-      };
-    }
-    
-    // Update form and trigger re-render
-    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true });
+    // Force update the form state
+    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
   const popularSkills = {
@@ -140,7 +109,6 @@ export const SkillsForm: React.FC = () => {
               </label>
               <select
                 {...register(`skills.${categoryIndex}.category`)}
-                onChange={(e) => handleCategoryChange(categoryIndex, e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
               >
                 <option value="">Select Category</option>
@@ -170,25 +138,26 @@ export const SkillsForm: React.FC = () => {
               Skills
             </label>
             
-            {/* Current skills */}
-            <div className="flex flex-wrap gap-2 mb-3 min-h-[2rem]">
-              {(watchedSkills[categoryIndex]?.items || []).map((skill, skillIndex) => (
-                <span
-                  key={skillIndex}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
-                >
-                  {skill}
-                  <button
-                    type="button"
-                    onClick={() => removeSkillFromCategory(categoryIndex, skillIndex)}
-                    className="ml-2 text-blue-600 hover:text-blue-800 text-lg leading-none"
+            {/* Current skills display */}
+            <div className="flex flex-wrap gap-2 mb-3 min-h-[2.5rem] p-2 bg-white border border-gray-200 rounded-lg">
+              {(watchedSkills[categoryIndex]?.items || []).length > 0 ? (
+                (watchedSkills[categoryIndex]?.items || []).map((skill, skillIndex) => (
+                  <span
+                    key={`${categoryIndex}-${skillIndex}-${skill}`}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200"
                   >
-                    ×
-                  </button>
-                </span>
-              ))}
-              {(!watchedSkills[categoryIndex]?.items || watchedSkills[categoryIndex]?.items.length === 0) && (
-                <span className="text-gray-400 text-sm italic">No skills added yet</span>
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => removeSkillFromCategory(categoryIndex, skillIndex)}
+                      className="ml-2 text-blue-600 hover:text-blue-800 text-lg leading-none hover:bg-blue-200 rounded-full w-4 h-4 flex items-center justify-center"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-400 text-sm italic py-1">No skills added yet</span>
               )}
             </div>
 
@@ -196,14 +165,14 @@ export const SkillsForm: React.FC = () => {
             <div className="flex items-center space-x-2">
               <input
                 type="text"
-                placeholder="Add a skill and press Enter"
+                placeholder="Type a skill and press Enter or click Add"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     const input = e.target as HTMLInputElement;
                     if (input.value.trim()) {
-                      addSkillToCategory(categoryIndex, input.value);
+                      addSkillToCategory(categoryIndex, input.value.trim());
                       input.value = '';
                     }
                   }
@@ -215,7 +184,7 @@ export const SkillsForm: React.FC = () => {
                 onClick={(e) => {
                   const input = e.currentTarget.previousElementSibling as HTMLInputElement;
                   if (input.value.trim()) {
-                    addSkillToCategory(categoryIndex, input.value);
+                    addSkillToCategory(categoryIndex, input.value.trim());
                     input.value = '';
                   }
                 }}
