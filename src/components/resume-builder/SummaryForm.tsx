@@ -23,14 +23,126 @@ export const SummaryForm: React.FC = () => {
   }, [watchedSummary, currentResume, setCurrentResume]);
 
   const generateAISummary = async () => {
+    if (!currentResume) return;
+    
     setIsGenerating(true);
-    // Simulate AI generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const aiSummary = `Experienced software engineer with 5+ years of expertise in full-stack development, specializing in React, Node.js, and cloud technologies. Proven track record of delivering scalable web applications and leading cross-functional teams. Passionate about clean code, agile methodologies, and continuous learning. Seeking to leverage technical skills and leadership experience to drive innovation at a forward-thinking technology company.`;
+    // Simulate AI generation with actual user data
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
-    setValue('summary', aiSummary);
+    // Analyze user's data to create personalized summary
+    const personalInfo = currentResume.personalInfo;
+    const experience = currentResume.experience || [];
+    const education = currentResume.education || [];
+    const skills = currentResume.skills || [];
+    const projects = currentResume.projects || [];
+    const userType = currentResume.userType;
+
+    let summary = '';
+
+    if (userType === 'fresher') {
+      // Fresh graduate summary
+      const degree = education[0]?.degree || 'degree';
+      const field = education[0]?.field || 'studies';
+      const school = education[0]?.school || 'university';
+      
+      const technicalSkills = skills.find(s => 
+        s.category.toLowerCase().includes('technical') || 
+        s.category.toLowerCase().includes('programming')
+      )?.items || [];
+      
+      const projectCount = projects.length;
+      const internshipCount = currentResume.internships?.length || 0;
+
+      summary = `Recent ${degree} graduate in ${field} from ${school} with ${
+        technicalSkills.length > 0 ? `strong technical skills in ${technicalSkills.slice(0, 3).join(', ')}` : 'a solid foundation in technology'
+      }. ${
+        projectCount > 0 ? `Demonstrated practical experience through ${projectCount} hands-on project${projectCount > 1 ? 's' : ''}, ` : ''
+      }${
+        internshipCount > 0 ? `${internshipCount} internship${internshipCount > 1 ? 's' : ''}, ` : ''
+      }showcasing problem-solving abilities and eagerness to learn. ${
+        experience.length > 0 ? `Gained valuable experience in ${experience[0].position} role, ` : ''
+      }seeking to leverage academic knowledge and practical skills to contribute to innovative projects and grow professionally in a dynamic technology environment.`;
+
+    } else if (userType === 'experienced' || userType === 'senior') {
+      // Experienced professional summary
+      const totalYears = experience.length > 0 ? Math.max(2, experience.length * 2) : '5+';
+      const currentRole = experience[0]?.position || 'professional';
+      const currentCompany = experience[0]?.company || 'leading organization';
+      const industry = experience.length > 1 ? 'multiple industries' : 'the industry';
+      
+      const technicalSkills = skills.find(s => 
+        s.category.toLowerCase().includes('technical') || 
+        s.category.toLowerCase().includes('programming')
+      )?.items || [];
+      
+      const softSkills = skills.find(s => 
+        s.category.toLowerCase().includes('soft') || 
+        s.category.toLowerCase().includes('leadership')
+      )?.items || [];
+
+      summary = `${userType === 'senior' ? 'Senior' : 'Experienced'} ${currentRole} with ${totalYears} years of expertise in ${
+        technicalSkills.length > 0 ? technicalSkills.slice(0, 3).join(', ') : 'technology solutions'
+      }. ${
+        userType === 'senior' ? 'Proven track record of leading cross-functional teams and driving strategic initiatives' : 'Demonstrated ability to deliver high-quality solutions and collaborate effectively with diverse teams'
+      } across ${industry}. ${
+        softSkills.length > 0 ? `Strong ${softSkills.slice(0, 2).join(' and ')} skills, ` : ''
+      }with a focus on ${
+        projects.length > 0 ? 'innovative project development and ' : ''
+      }continuous improvement. Seeking to leverage extensive experience and technical expertise to drive innovation and mentor emerging talent in a challenging ${userType === 'senior' ? 'leadership' : 'senior'} role.`;
+
+    } else if (userType === 'career-change') {
+      // Career changer summary
+      const previousField = experience[0]?.position || 'previous role';
+      const targetSkills = skills.find(s => 
+        s.category.toLowerCase().includes('technical') || 
+        s.category.toLowerCase().includes('programming')
+      )?.items || [];
+      
+      const transferableSkills = skills.find(s => 
+        s.category.toLowerCase().includes('soft') || 
+        s.category.toLowerCase().includes('leadership')
+      )?.items || [];
+
+      summary = `Motivated professional transitioning from ${previousField} to technology, bringing ${
+        transferableSkills.length > 0 ? `strong ${transferableSkills.slice(0, 2).join(' and ')} skills` : 'valuable transferable skills'
+      } and a fresh perspective. ${
+        targetSkills.length > 0 ? `Developed proficiency in ${targetSkills.slice(0, 3).join(', ')} through ` : 'Gained technical knowledge through '
+      }${
+        education.length > 0 ? 'formal education, ' : ''
+      }${
+        projects.length > 0 ? `hands-on projects, ` : ''
+      }and continuous learning. ${
+        experience.length > 0 ? `Previous experience in ${experience[0].company} provided strong foundation in problem-solving and client relations. ` : ''
+      }Eager to apply diverse background and newly acquired technical skills to contribute meaningfully to innovative technology solutions.`;
+
+    } else {
+      // Default summary
+      const role = experience[0]?.position || 'professional';
+      const skills_list = skills.flatMap(s => s.items).slice(0, 4).join(', ') || 'various technologies';
+      
+      summary = `Dedicated ${role} with expertise in ${skills_list}. ${
+        experience.length > 0 ? `Proven track record at ${experience[0].company} ` : ''
+      }${
+        education.length > 0 ? `with ${education[0].degree} in ${education[0].field}. ` : '. '
+      }${
+        projects.length > 0 ? `Demonstrated technical abilities through ${projects.length} project${projects.length > 1 ? 's' : ''}, ` : ''
+      }seeking to leverage skills and experience to drive innovation and contribute to organizational success in a challenging role.`;
+    }
+
+    setValue('summary', summary);
     setIsGenerating(false);
+  };
+
+  const hasUserData = () => {
+    if (!currentResume) return false;
+    
+    const hasBasicInfo = currentResume.personalInfo?.fullName;
+    const hasExperience = currentResume.experience?.length > 0;
+    const hasEducation = currentResume.education?.length > 0;
+    const hasSkills = currentResume.skills?.some(s => s.items?.length > 0);
+    
+    return hasBasicInfo && (hasExperience || hasEducation || hasSkills);
   };
 
   return (
@@ -42,7 +154,7 @@ export const SummaryForm: React.FC = () => {
           </label>
           <button
             onClick={generateAISummary}
-            disabled={isGenerating}
+            disabled={isGenerating || !hasUserData()}
             className="flex items-center space-x-2 px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
@@ -98,11 +210,18 @@ export const SummaryForm: React.FC = () => {
         <div className="flex items-start space-x-3">
           <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
           <div>
-            <h4 className="text-sm font-medium text-purple-900 mb-1">AI Suggestions</h4>
-            <p className="text-sm text-purple-700">
-              Our AI can analyze your experience and education to generate a personalized summary. 
-              Click "AI Generate" to create a professional summary tailored to your background.
-            </p>
+            <h4 className="text-sm font-medium text-purple-900 mb-1">AI Summary Generation</h4>
+            {hasUserData() ? (
+              <p className="text-sm text-purple-700">
+                Our AI will analyze your experience, education, skills, and projects to generate a personalized summary. 
+                Click "AI Generate" to create a professional summary tailored to your background and career stage.
+              </p>
+            ) : (
+              <p className="text-sm text-purple-700">
+                Complete the previous steps (Personal Info, Experience/Education, Skills) to enable AI summary generation. 
+                The AI needs your information to create a personalized summary.
+              </p>
+            )}
           </div>
         </div>
       </div>
