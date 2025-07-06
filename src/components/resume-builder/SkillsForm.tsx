@@ -45,15 +45,14 @@ export const SkillsForm: React.FC = () => {
       const currentSkills = [...watchedSkills];
       const currentItems = currentSkills[categoryIndex]?.items || [];
       
-      // Check if skill already exists
+      // Check if skill already exists in this category
       if (!currentItems.includes(skill.trim())) {
         currentSkills[categoryIndex] = {
           ...currentSkills[categoryIndex],
           items: [...currentItems, skill.trim()]
         };
         
-        // Force update the form state
-        setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+        setValue('skills', currentSkills);
       }
     }
   };
@@ -66,8 +65,7 @@ export const SkillsForm: React.FC = () => {
       items: currentItems.filter((_, i) => i !== skillIndex)
     };
     
-    // Force update the form state
-    setValue('skills', currentSkills, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+    setValue('skills', currentSkills);
   };
 
   const popularSkills = {
@@ -135,11 +133,11 @@ export const SkillsForm: React.FC = () => {
 
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-700">
-              Skills
+              Skills for {watchedSkills[categoryIndex]?.category || 'this category'}
             </label>
             
             {/* Current skills display */}
-            <div className="flex flex-wrap gap-2 mb-3 min-h-[2.5rem] p-2 bg-white border border-gray-200 rounded-lg">
+            <div className="flex flex-wrap gap-2 mb-3 min-h-[2.5rem] p-3 bg-white border border-gray-200 rounded-lg">
               {(watchedSkills[categoryIndex]?.items || []).length > 0 ? (
                 (watchedSkills[categoryIndex]?.items || []).map((skill, skillIndex) => (
                   <span
@@ -231,11 +229,11 @@ export const SkillsForm: React.FC = () => {
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h4 className="text-sm font-medium text-green-900 mb-2">🎯 Skills Best Practices</h4>
         <ul className="text-sm text-green-700 space-y-1">
-          <li>• Include both hard and soft skills relevant to your target role</li>
-          <li>• Be specific (e.g., "React.js" instead of just "JavaScript frameworks")</li>
-          <li>• Order skills by proficiency level (most skilled first)</li>
-          <li>• Include years of experience or proficiency level when relevant</li>
-          <li>• Match skills mentioned in job descriptions you're targeting</li>
+          <li>• Create separate categories for different skill types</li>
+          <li>• Add Technical Skills: React, Python, JavaScript, etc.</li>
+          <li>• Add Programming Languages: JavaScript, Python, Java, etc.</li>
+          <li>• Add Soft Skills: Leadership, Communication, etc.</li>
+          <li>• Each category will show separately in your resume</li>
         </ul>
       </div>
     </div>
