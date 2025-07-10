@@ -227,13 +227,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
           <h2 className="text-lg font-bold text-gray-900 mb-3 uppercase tracking-wide">
             Skills
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {validSkillCategories.map((skillGroup) => (
-              <div key={skillGroup.id} className="flex flex-wrap">
-                <span className="font-semibold text-gray-900 min-w-fit mr-2">
+              <div key={skillGroup.id} className="flex">
+                <span className="font-semibold text-gray-900 min-w-[140px] mr-3">
                   {skillGroup.category}:
                 </span>
-                <span className="text-gray-700 flex-1">
+                <span className="text-gray-700 flex-1 leading-relaxed">
                   {skillGroup.items.join(', ')}
                 </span>
               </div>

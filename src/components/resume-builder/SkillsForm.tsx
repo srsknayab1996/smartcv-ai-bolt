@@ -8,7 +8,7 @@ export const SkillsForm: React.FC = () => {
   
   const { control, register, watch, setValue } = useForm({
     defaultValues: {
-      skills: currentResume?.skills?.length ? currentResume.skills : [{
+      skills: currentResume?.skills?.length > 0 ? currentResume.skills : [{
         id: Date.now().toString(),
         category: 'Technical Skills',
         items: []
@@ -25,9 +25,13 @@ export const SkillsForm: React.FC = () => {
 
   React.useEffect(() => {
     if (currentResume) {
+      // Filter out empty skill categories before saving
+      const validSkills = watchedSkills.filter(skillGroup => 
+        skillGroup.category && skillGroup.items && skillGroup.items.length > 0
+      );
       setCurrentResume({
         ...currentResume,
-        skills: watchedSkills
+        skills: validSkills
       });
     }
   }, [watchedSkills, currentResume, setCurrentResume]);
