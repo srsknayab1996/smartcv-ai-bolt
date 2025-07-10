@@ -117,13 +117,13 @@ export const UserTypeSelection: React.FC = () => {
             <div
               key={type.id}
               onClick={() => handleUserTypeSelect(type.id)}
-              className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all duration-200 hover:shadow-md ${colorClasses.border}`}
+              className={`relative cursor-pointer rounded-2xl border-3 p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${colorClasses.border} ${isSelected ? 'ring-4 ring-opacity-20' : ''}`}
             >
               {/* Selection indicator */}
               {isSelected && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center">
-                  <div className={`w-4 h-4 ${colorClasses.check} rounded-full flex items-center justify-center`}>
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full shadow-xl flex items-center justify-center animate-bounce">
+                  <div className={`w-6 h-6 ${colorClasses.check} rounded-full flex items-center justify-center`}>
+                    <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -131,24 +131,24 @@ export const UserTypeSelection: React.FC = () => {
               )}
 
               <div className="flex items-start space-x-4">
-                <div className={`w-12 h-12 ${colorClasses.icon} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div className={`w-16 h-16 ${colorClasses.icon} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transform transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-105'}`}>
+                  <Icon className="w-8 h-8 text-white" />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {type.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-base text-gray-600 mb-6 leading-relaxed">
                     {type.description}
                   </p>
                   
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-900">What you'll get:</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-base font-bold text-gray-900 mb-3">What you'll get:</h4>
+                    <ul className="space-y-2">
                       {type.features.map((feature, index) => (
-                        <li key={index} className="flex items-center text-xs text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2 flex-shrink-0" />
+                        <li key={index} className="flex items-center text-sm text-gray-700">
+                          <div className={`w-2 h-2 ${colorClasses.icon} rounded-full mr-3 flex-shrink-0`} />
                           {feature}
                         </li>
                       ))}
@@ -162,17 +162,17 @@ export const UserTypeSelection: React.FC = () => {
       </div>
 
       {currentResume?.userType && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-8 shadow-lg">
           <div className="flex items-start space-x-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-blue-600 text-sm font-bold">💡</span>
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+              <span className="text-white text-lg">💡</span>
             </div>
             <div>
-              <h4 className="text-sm font-medium text-blue-900 mb-2">
+              <h4 className="text-lg font-bold text-blue-900 mb-4">
                 Personalized Tips for {userTypes.find(t => t.id === currentResume.userType)?.title}
               </h4>
               {currentResume.userType === 'fresher' && (
-                <div className="text-sm text-blue-700 space-y-1">
+                <div className="text-base text-blue-800 space-y-2 leading-relaxed">
                   <p>• Focus on your education, projects, and internships</p>
                   <p>• Highlight relevant coursework and academic achievements</p>
                   <p>• Emphasize technical skills and certifications</p>
@@ -180,7 +180,7 @@ export const UserTypeSelection: React.FC = () => {
                 </div>
               )}
               {currentResume.userType === 'experienced' && (
-                <div className="text-sm text-blue-700 space-y-1">
+                <div className="text-base text-blue-800 space-y-2 leading-relaxed">
                   <p>• Lead with your professional experience and achievements</p>
                   <p>• Quantify your impact with specific metrics and numbers</p>
                   <p>• Show career progression and increasing responsibilities</p>
@@ -188,7 +188,7 @@ export const UserTypeSelection: React.FC = () => {
                 </div>
               )}
               {currentResume.userType === 'career-change' && (
-                <div className="text-sm text-blue-700 space-y-1">
+                <div className="text-base text-blue-800 space-y-2 leading-relaxed">
                   <p>• Highlight transferable skills relevant to your target role</p>
                   <p>• Use a functional or hybrid resume format</p>
                   <p>• Include relevant training, certifications, or courses</p>
@@ -196,7 +196,7 @@ export const UserTypeSelection: React.FC = () => {
                 </div>
               )}
               {currentResume.userType === 'senior' && (
-                <div className="text-sm text-blue-700 space-y-1">
+                <div className="text-base text-blue-800 space-y-2 leading-relaxed">
                   <p>• Focus on strategic impact and leadership achievements</p>
                   <p>• Highlight team management and organizational influence</p>
                   <p>• Include board positions, speaking engagements, or publications</p>
