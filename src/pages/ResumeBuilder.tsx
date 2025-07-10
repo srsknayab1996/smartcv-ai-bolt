@@ -111,9 +111,9 @@ export const ResumeBuilder: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full max-w-none">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Resume Builder</h1>
         <p className="text-gray-600">Create a professional resume with AI assistance</p>
         {currentResume.userType && (
@@ -129,7 +129,7 @@ export const ResumeBuilder: React.FC = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center justify-between mb-6">
           <span className="text-sm font-medium text-gray-900">
             Step {currentStep + 1} of {steps.length}
@@ -168,9 +168,9 @@ export const ResumeBuilder: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
         {/* Form Section */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 min-h-fit">
           <div className="p-8 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -253,7 +253,7 @@ export const ResumeBuilder: React.FC = () => {
         </div>
 
         {/* Preview Section */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 min-h-fit">
           <div className="p-8 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">Live Preview</h2>

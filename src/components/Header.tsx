@@ -1,25 +1,42 @@
 import React from 'react';
-import { Menu, Bell, Settings } from 'lucide-react';
+import { Menu, Bell, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   title: string;
   onMenuClick: () => void;
+  onSidebarToggle: () => void;
+  sidebarCollapsed: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
+export const Header: React.FC<HeaderProps> = ({ title, onMenuClick, onSidebarToggle, sidebarCollapsed }) => {
   const { user } = useAuth();
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center space-x-4">
+          {/* Mobile menu button */}
           <button
             onClick={onMenuClick}
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
+          
+          {/* Desktop sidebar toggle */}
+          <button
+            onClick={onSidebarToggle}
+            className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {sidebarCollapsed ? (
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            ) : (
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+          
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
         </div>
 

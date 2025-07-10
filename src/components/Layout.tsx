@@ -9,6 +9,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   const getPageTitle = () => {
@@ -27,12 +28,21 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
       
-      <div className="lg:pl-72">
+      <div className={`transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'
+      }`}>
         <Header 
           title={getPageTitle()}
           onMenuClick={() => setSidebarOpen(true)}
+          onSidebarToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          sidebarCollapsed={sidebarCollapsed}
         />
         
         <main className="p-6">
